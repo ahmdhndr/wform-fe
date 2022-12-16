@@ -1,0 +1,19 @@
+{
+  "LOGIN": "Masuk",
+  "REGISTER": "Daftar",
+  "DONT_HAVE_ACCOUNT": "Belum mempunyai akun?",
+  "HAVE_ACCOUNT": "Sudah mempunyai akun?",
+  "USER_NOT_FOUND": "Akun tidak ditemukan.",
+  "INVALID_PASSWORD": "Password salah!",
+  "ERR_NETWORK": "Terjadi kesalahan pada server. Silakan coba beberapa saat lagi.",
+  "FULL_NAME": "Nama lengkap",
+  "EMAIL_ALREADY_EXIST": "Email telah digunakan!",
+  "PASSWORD": "Kata sandi",
+  "PASSWORD_CONFIRM": "Konfirmasi password harus diisi!",
+  "MATCH_PASSWORD_CONFIRM": "{{field}} tidak cocok!",
+  "FIELD_REQUIRED": "{{field}} harus diisi!",
+  "FIELD_MIN_LENGTH": "{{field}} harus memiliki setidaknya {{min}} karakter!",
+  "VALID_EMAIL": "Format email harus valid.",
+  "BACK": "Kembali ke beranda",
+  "NOT_FOUND": "Ups! Halaman tersebut tidak ditemukan."
+}

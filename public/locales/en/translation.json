@@ -1,0 +1,19 @@
+{
+  "LOGIN": "Login",
+  "REGISTER": "Register",
+  "DONT_HAVE_ACCOUNT": "Don't have an account?",
+  "HAVE_ACCOUNT": "Already have an account?",
+  "USER_NOT_FOUND": "Account not found.",
+  "INVALID_PASSWORD": "Wrong password!",
+  "ERR_NETWORK": "An error occurred on the server. Please try again later.",
+  "FULL_NAME": "Fullname",
+  "EMAIL_ALREADY_EXIST": "Email already exist!",
+  "PASSWORD": "Password",
+  "PASSWORD_CONFIRM": "Confirm password is required!",
+  "MATCH_PASSWORD_CONFIRM": "{{field}} don't match!",
+  "FIELD_REQUIRED": "{{field}} is required!",
+  "FIELD_MIN_LENGTH": "{{field}} must have at least {{min}} characters!",
+  "VALID_EMAIL": "Email format must be valid.",
+  "BACK": "Go home",
+  "NOT_FOUND": "Oops! We can't find that page."
+}
