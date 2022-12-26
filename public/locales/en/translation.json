@@ -14,6 +14,11 @@
   "FIELD_REQUIRED": "{{field}} is required!",
   "FIELD_MIN_LENGTH": "{{field}} must have at least {{min}} characters!",
   "VALID_EMAIL": "Email format must be valid.",
-  "BACK": "Go home",
-  "NOT_FOUND": "Oops! We can't find that page."
+  "BACK": "Back to home",
+  "NOT_FOUND": "Oops! We can't find that page.",
+  "INVALID_QUESTION_TYPE": "Not a valid question!",
+  "REFRESH_TOKEN_EXPIRED": "Token has expired. Please log back in!",
+  "FORM_NOT_FOUND": "Sorry, form not found.",
+  "FORBIDDEN_ACCESS": "You don't have permission to access this resource!",
+  "INVALID_ID": "Not a valid ID!"
 }

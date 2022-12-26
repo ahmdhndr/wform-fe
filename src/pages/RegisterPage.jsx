@@ -1,49 +1,31 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { LockOutlined } from '@mui/icons-material';
 import { Avatar, Box, Container, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+
 import RegisterForm from '../components/RegisterForm';
 import Toast from '../components/Toast';
-import { register } from '../services/api';
+
+import { clearNotification } from '../features/users/userSlice';
+import { registerUser } from '../features/users/userActions';
 
 function RegisterPage() {
   const { t } = useTranslation();
-  const [serverError, setServerError] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, notification } = useSelector((state) => state.user);
 
   const onRegisterHandler = async (user) => {
-    setIsLoading(true);
-
-    const res = await register(user);
-
-    if (res.message === 'EMAIL_ALREADY_EXIST') {
-      setServerError(true);
-      setErrorMessage(t('EMAIL_ALREADY_EXIST'));
-    } else if (res.code === 'ERR_NETWORK') {
-      res.message = 'ERR_NETWORK';
-      setOpen(true);
-      setAlertMessage(res.message);
+    const data = await dispatch(registerUser(user));
+    if (data.payload !== undefined && data.payload.status === 'success') {
+      navigate('/login');
     }
-    setIsLoading(false);
-
-    if (res.status === 'success') navigate('/');
   };
 
-  const onResetEmailExist = () => {
-    setServerError(false);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpen(false);
+  const handleClose = () => {
+    dispatch(clearNotification());
   };
 
   return (
@@ -63,12 +45,12 @@ function RegisterPage() {
           transform: 'translate(-50%, -50%)',
         }}
       >
-        {open && (
+        {notification.open && (
           <Toast
-            open={open}
+            open={notification.open}
             handleClose={handleClose}
-            alertMessage={t(alertMessage)}
-            status="error"
+            message={t(notification.message)}
+            status={notification.type}
           />
         )}
         <Box
@@ -84,13 +66,7 @@ function RegisterPage() {
           <Avatar sx={{ m: 1 }}>
             <LockOutlined sx={{ color: 'text.primary' }} />
           </Avatar>
-          <RegisterForm
-            registerHandler={onRegisterHandler}
-            serverError={serverError}
-            errorMessage={errorMessage}
-            resetEmailExist={onResetEmailExist}
-            loading={isLoading}
-          />
+          <RegisterForm registerHandler={onRegisterHandler} loading={loading} />
         </Box>
       </Container>
     </>

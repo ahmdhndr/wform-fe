@@ -1,4 +1,4 @@
-import { Container, Typography } from '@mui/material';
+import { Button, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -19,9 +19,11 @@ function NotFoundPage() {
       <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
         {t('NOT_FOUND')}
       </Typography>
-      <Link to="/" variant="body2" color="primary.main">
-        {t('BACK')}
-      </Link>
+      <Button variant="contained">
+        <Link to="/" style={{ color: '#fff' }}>
+          {t('BACK')}
+        </Link>
+      </Button>
     </Container>
   );
 }

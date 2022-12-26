@@ -27,6 +27,8 @@
     ],
     "react/jsx-props-no-spreading": "off",
     "no-console": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "no-param-reassign": "off",
+    "import/no-cycle": [2, { "maxDepth": 1 }]
   }
 }

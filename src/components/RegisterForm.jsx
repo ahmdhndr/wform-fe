@@ -7,13 +7,7 @@ import PropTypes from 'prop-types';
 
 function RegisterForm(props) {
   const { t } = useTranslation();
-  const {
-    registerHandler,
-    serverError,
-    errorMessage,
-    resetEmailExist,
-    loading,
-  } = props;
+  const { registerHandler, loading } = props;
 
   const {
     register,
@@ -66,13 +60,9 @@ function RegisterForm(props) {
         id="email"
         label="Email Address"
         name="email"
-        onKeyDown={resetEmailExist}
         {...register('email', registerValidateOptions.email)}
-        error={!!errors.email || !!serverError}
-        helperText={
-          (serverError && errorMessage) ||
-          (errors?.email && errors.email.message)
-        }
+        error={!!errors.email}
+        helperText={errors?.email && errors.email.message}
       />
       <TextField
         margin="normal"
@@ -131,9 +121,6 @@ function RegisterForm(props) {
 
 RegisterForm.propTypes = {
   registerHandler: PropTypes.func.isRequired,
-  serverError: PropTypes.bool.isRequired,
-  errorMessage: PropTypes.string.isRequired,
-  resetEmailExist: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 

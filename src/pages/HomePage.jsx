@@ -1,106 +1,60 @@
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Add } from '@mui/icons-material';
 import { Box, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
-import { addNewForm, addNewQuestion, getForms } from '../services/api';
-import Toast from '../components/Toast';
+import { addNewForm, fetchForms } from '../features/forms/formsActions';
+import { changeStatus, getAllForms } from '../features/forms/formsSlice';
 
 function HomePage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const [formsData, getFormsData] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const { status } = useSelector((state) => state.forms);
+  const forms = useSelector((state) => getAllForms(state));
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchFormsData = async () => {
-      const res = await getForms();
-      getFormsData(res.data);
-      console.log(res);
-      if (res.code === 'ERR_NETWORK') {
-        res.message = 'ERR_NETWORK';
-        setOpen(true);
-        setAlertMessage(res.message);
-        setLoading(false);
-      } else if (res.status === 'fail') {
-        setOpen(true);
-        setAlertMessage(res.message);
-        setLoading(false);
-      }
+  console.log(forms);
 
-      if (
-        res.message === 'INVALID_REFRESH_TOKEN' ||
-        res.message === 'REFRESH_TOKEN_EXPIRED'
-      ) {
-        navigate('/login');
-      }
-    };
-
-    fetchFormsData();
-  }, []);
-
-  const createFormFn = async () => {
+  const createNewFormHandler = async () => {
     setLoading(true);
-    const res = await addNewForm();
-    console.log('ADDED FORM', res);
-    if (res.code === 'ERR_NETWORK') {
-      res.message = 'ERR_NETWORK';
-      setOpen(true);
-      setAlertMessage(res.message);
-      setLoading(false);
-    } else if (res.status === 'fail') {
-      setOpen(true);
-      setAlertMessage(res.message);
-      setLoading(false);
-    }
-    if (res.status === 'success') {
-      const { addedForm } = res.data;
-      console.log('addedForm', addedForm);
-      const questionRes = await addNewQuestion(addedForm._id);
-      if (questionRes.code === 'ERR_NETWORK') {
-        questionRes.message = 'ERR_NETWORK';
-        setOpen(true);
-        setAlertMessage(questionRes.message);
+    await dispatch(addNewForm()).then((data) => {
+      try {
+        const formId = data.payload._id || '';
+        if (formId.length > 0) {
+          navigate(`/forms/${formId}/edit`);
+        }
         setLoading(false);
-      } else if (questionRes.status === 'fail') {
-        setOpen(true);
-        setAlertMessage(questionRes.message);
+      } catch (error) {
         setLoading(false);
       }
-      console.log(questionRes);
-      setLoading(false);
-    }
+    });
+    dispatch(changeStatus({ status: 'idle' }));
     setLoading(false);
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchForms()).then(() =>
+        dispatch(changeStatus({ status: 'idle' }))
+      );
     }
-    setOpen(false);
-  };
+  }, []);
 
   return (
-    <Container component="section" sx={{ px: 0, mt: 2, position: 'relative' }}>
-      {open && (
-        <Toast
-          open={open}
-          handleClose={handleClose}
-          alertMessage={t(alertMessage)}
-          status="error"
-        />
-      )}
-      <Box sx={{ textAlign: 'right' }}>
+    <Container
+      component="section"
+      maxWidth={false}
+      sx={{ px: '0 !important', position: 'relative' }}
+    >
+      <Box sx={{ textAlign: 'right', mt: 2, px: 3 }}>
         <LoadingButton
           sx={{ color: '#fff' }}
           variant="contained"
           endIcon={<Add />}
           loading={loading}
-          onClick={createFormFn}
+          onClick={createNewFormHandler}
         >
           New Form
         </LoadingButton>

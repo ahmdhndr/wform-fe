@@ -15,5 +15,10 @@
   "FIELD_MIN_LENGTH": "{{field}} harus memiliki setidaknya {{min}} karakter!",
   "VALID_EMAIL": "Format email harus valid.",
   "BACK": "Kembali ke beranda",
-  "NOT_FOUND": "Ups! Halaman tersebut tidak ditemukan."
+  "NOT_FOUND": "Ups! Halaman tersebut tidak ditemukan.",
+  "INVALID_QUESTION_TYPE": "Pertanyaan tidak valid!",
+  "REFRESH_TOKEN_EXPIRED": "Token telah kadaluarsa. Silakan masuk kembali!",
+  "FORM_NOT_FOUND": "Maaf, form tidak dapat ditemukan.",
+  "FORBIDDEN_ACCESS": "Anda tidak memiliki akses terhadap resource ini!",
+  "INVALID_ID": "ID tidak valid!"
 }

@@ -1,19 +1,22 @@
-/* eslint-disable import/no-cycle */
-/* eslint-disable no-param-reassign */
 import axios from 'axios';
-import { createBrowserHistory } from 'history';
-import Cookies from 'js-cookie';
-import { BASE_URL } from '../utils/Constants';
-import { getAccessToken, getRefreshToken, updateAccessToken } from '../services/api';
 
-const history = createBrowserHistory();
+import { SERVER_URL } from '../utils/Constants';
+
+import { logout } from '../features/users/userSlice';
+import { getAccessToken, getRefreshToken, updateAccessToken } from '../services/cookiesManager';
+
+let store;
 
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: SERVER_URL,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
 });
+
+export const injectStore = (_store) => {
+  store = _store;
+};
 
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -38,8 +41,7 @@ axiosInstance.interceptors.response.use(
       // Access token was expired
       const { message } = err.response.data;
       if (message === 'INVALID_REFRESH_TOKEN' || message === 'REFRESH_TOKEN_EXPIRED') {
-        Cookies.remove('token');
-        history.push('/login');
+        store.dispatch(logout());
       }
       if (err.response.status === 401 && !originalConfig._retry) {
         originalConfig._retry = true;

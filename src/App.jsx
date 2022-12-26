@@ -1,5 +1,7 @@
-import { useState, useMemo, useContext, useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Container } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -11,28 +13,31 @@ import ColorModeContext from './context/ColorModeContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
-import getDesignTokens from './utils/getDesignTokens';
+import colorTheme from './utils/colorTheme';
 import {
   COLOR_MODE,
+  DETAIL_FORM_PATH,
   HOME,
   LOGIN_PATH,
   NOT_FOUND_PATH,
   REGISTER_PATH,
 } from './utils/Constants';
 import NotFoundPage from './pages/NotFoundPage';
-import RequireAuth from './components/RequireAuth';
+import ProtectedRoute from './utils/ProtectedRoute';
+import PublicRoute from './utils/PublicRoute';
 import HomePage from './pages/HomePage';
-import { AuthContext } from './context/AuthContext';
 import Header from './components/Header';
+import Toast from './components/Toast';
+import DetailForms from './pages/DetailForms';
+import { clearNotification } from './features/forms/formsSlice';
+
+let isInitial = true;
 
 function App() {
-  const navigate = useNavigate();
-  const { isLoggedIn } = useContext(AuthContext);
+  const { t } = useTranslation();
   const [mode, setMode] = useState(
     () => localStorage.getItem(COLOR_MODE) || 'light'
   );
-  const [initializing, setInitializing] = useState(null);
-
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
@@ -44,16 +49,18 @@ function App() {
     [mode]
   );
 
-  const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+  const theme = useMemo(() => createTheme(colorTheme(mode)), [mode]);
+
+  const { notification } = useSelector((state) => state.forms);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (isLoggedIn && isLoggedIn !== 'undefined') {
-      setInitializing(false);
-      navigate('/');
-    }
+    if (isInitial) isInitial = false;
   }, []);
 
-  if (initializing) return null;
+  const handleClose = () => {
+    dispatch(clearNotification());
+  };
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -78,28 +85,56 @@ function App() {
           }}
           className="app-container"
         >
-          {/* header */}
+          {notification.open && (
+            <Toast
+              open={notification.open}
+              message={t(notification.message)}
+              status={notification.type}
+              handleClose={handleClose}
+            />
+          )}
+          {/* Header */}
           <Header theme={theme} onClick={colorMode.toggleColorMode} />
-          <Container component="main" sx={{ flex: 1, position: 'relative' }}>
+          {/* Main */}
+          <Container
+            component="main"
+            maxWidth={false}
+            sx={{ px: '0 !important', flex: 1, position: 'relative' }}
+          >
             <Routes>
-              <Route exact path={LOGIN_PATH} element={<LoginPage />} />
-              <Route path={REGISTER_PATH} element={<RegisterPage />} />
+              <Route
+                path={LOGIN_PATH}
+                element={
+                  <PublicRoute>
+                    <LoginPage />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path={REGISTER_PATH}
+                element={
+                  <PublicRoute>
+                    <RegisterPage />
+                  </PublicRoute>
+                }
+              />
               <Route
                 path={HOME}
                 element={
-                  <RequireAuth>
+                  <ProtectedRoute>
                     <HomePage />
-                  </RequireAuth>
+                  </ProtectedRoute>
                 }
               />
               <Route
-                path={NOT_FOUND_PATH}
+                path={DETAIL_FORM_PATH}
                 element={
-                  <RequireAuth>
-                    <NotFoundPage />
-                  </RequireAuth>
+                  <ProtectedRoute>
+                    <DetailForms />
+                  </ProtectedRoute>
                 }
               />
+              <Route path={NOT_FOUND_PATH} element={<NotFoundPage />} />
             </Routes>
           </Container>
         </Container>

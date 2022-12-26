@@ -1,59 +1,32 @@
-import { useContext, useState } from 'react';
-import { LockOutlined } from '@mui/icons-material';
-import { Avatar, Box, Container, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { LockOutlined } from '@mui/icons-material';
+import { Avatar, Box, Container, Typography } from '@mui/material';
 
-import { AuthContext } from '../context/AuthContext';
 import LoginForm from '../components/LoginForm';
 import Toast from '../components/Toast';
-import { login, setAuthCookies } from '../services/api';
+import { clearNotification } from '../features/users/userSlice';
+import { loginUser } from '../features/users/userActions';
 
 function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const { onLogin } = useContext(AuthContext);
+  const location = useLocation();
 
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+  const dispatch = useDispatch();
+  const { loading, notification } = useSelector((state) => state.user);
 
   const onLoginHandler = async ({ email, password }) => {
-    setLoading(true);
-    const res = await login(email, password);
-
-    if (res.code === 'ERR_NETWORK') {
-      res.message = 'ERR_NETWORK';
-      setOpen(true);
-      setAlertMessage(res.message);
-      setLoading(false);
-    } else if (res.status === 'fail') {
-      setOpen(true);
-      setAlertMessage(res.message);
-      setLoading(false);
+    const { payload } = await dispatch(loginUser({ email, password }));
+    if (payload !== undefined && payload.status === 'success') {
+      navigate(location.state?.path || '/');
     }
-
-    if (res.status === 'success') {
-      const { accessToken, refreshToken } = res.data;
-      const data = {
-        accessToken,
-        refreshToken,
-      };
-      onLogin(accessToken);
-      setAuthCookies(data);
-      setLoading(false);
-      navigate(state?.path || '/');
-    }
-    setLoading(false);
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpen(false);
+  const handleClose = () => {
+    dispatch(clearNotification());
   };
 
   return (
@@ -63,12 +36,12 @@ function LoginPage() {
           <title>WForm - Login Page</title>
         </Helmet>
       </HelmetProvider>
-      {open && (
+      {notification.open && (
         <Toast
-          open={open}
+          open={notification.open}
           handleClose={handleClose}
-          alertMessage={t(alertMessage)}
-          status="error"
+          message={t(notification.message)}
+          status={notification.type}
         />
       )}
       <Container

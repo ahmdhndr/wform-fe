@@ -2,13 +2,13 @@ import { Alert, Snackbar } from '@mui/material';
 import PropTypes from 'prop-types';
 
 function Toast(props) {
-  const { open, handleClose, alertMessage, status } = props;
+  const { open, message, status, handleClose } = props;
 
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       open={open}
-      autoHideDuration={6000}
+      autoHideDuration={3000}
       onClose={handleClose}
       sx={{ width: { sm: '550px', md: '600px' } }}
     >
@@ -17,9 +17,9 @@ function Toast(props) {
         variant="filled"
         onClose={handleClose}
         severity={status}
-        sx={{ width: '100%' }}
+        sx={{ width: '100%', color: '#fff' }}
       >
-        {alertMessage}
+        {message}
       </Alert>
     </Snackbar>
   );
@@ -27,8 +27,8 @@ function Toast(props) {
 
 Toast.propTypes = {
   open: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
   handleClose: PropTypes.func.isRequired,
-  alertMessage: PropTypes.string.isRequired,
   status: PropTypes.oneOf(['error', 'success', 'warning', 'info']).isRequired,
 };
 

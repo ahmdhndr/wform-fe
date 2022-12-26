@@ -1,24 +1,20 @@
-import { Suspense } from 'react';
-// import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
-// import { BrowserRouter } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
+import { Provider } from 'react-redux';
 
-import './styles/style.css';
+import './assets/styles/style.css';
 import App from './App';
 
 import './utils/i18n';
-import { AuthContextProvider } from './context/AuthContext';
-import CustomRouter from './components/CustomRouter';
+import store from './app/store';
+import { injectStore } from './middleware/axiosInterceptorsMiddleware';
 
-const history = createBrowserHistory();
+injectStore(store);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <AuthContextProvider>
-    <CustomRouter history={history}>
-      <Suspense fallback="loading">
-        <App />
-      </Suspense>
-    </CustomRouter>
-  </AuthContextProvider>
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>
 );

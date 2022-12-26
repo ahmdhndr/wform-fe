@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { AccountCircle, Brightness4, Brightness7 } from '@mui/icons-material';
@@ -14,17 +14,18 @@ import {
   Typography,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-
-import { AuthContext } from '../context/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../features/users/userSlice';
 
 function Header({ theme, onClick }) {
   const navigate = useNavigate();
-  const { isLoggedIn, logout } = useContext(AuthContext);
   const { i18n } = useTranslation();
   const [language, setLanguage] = useState(
     () => localStorage.getItem('i18nextLng') || 'id'
   );
   const [anchorEl, setAnchorEl] = useState(null);
+  const { userInfo } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -36,7 +37,7 @@ function Header({ theme, onClick }) {
 
   const handleLogout = () => {
     setAnchorEl(null);
-    logout();
+    dispatch(logout());
     navigate('/login');
   };
 
@@ -49,7 +50,7 @@ function Header({ theme, onClick }) {
   return (
     <AppBar
       sx={{
-        bgcolor: 'primary.main',
+        bgcolor: 'secondary.main',
         backgroundImage: 'none',
         boxShadow: 'none',
         position: 'static',
@@ -62,8 +63,8 @@ function Header({ theme, onClick }) {
         px: '16px',
       }}
     >
-      <Link href="/">
-        <Typography variant="h4" color="white">
+      <Link to="/">
+        <Typography variant="h4" color="#262626">
           <strong>W</strong>Form
         </Typography>
       </Link>
@@ -71,7 +72,7 @@ function Header({ theme, onClick }) {
         <FormControl variant="standard">
           <Select
             sx={{
-              color: '#fff',
+              color: '#262626',
               ':before': { borderBottom: 'none' },
               ':hover:not(.Mui-disabled):before': { borderBottom: 'none' },
             }}
@@ -87,16 +88,16 @@ function Header({ theme, onClick }) {
           <IconButton
             onClick={onClick}
             sx={{
-              color: '#fff',
+              color: '#262626',
             }}
           >
             {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
         </Toolbar>
-        {isLoggedIn && (
+        {userInfo && (
           <div>
             <IconButton
-              sx={{ color: '#fff' }}
+              sx={{ color: '#262626' }}
               size="large"
               aria-label="User Avatar"
               aria-controls="menu-appbar"
@@ -122,7 +123,6 @@ function Header({ theme, onClick }) {
               onClose={handleClose}
             >
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              {/* <MenuItem onClick={handleClose}>My account</MenuItem> */}
             </Menu>
           </div>
         )}
